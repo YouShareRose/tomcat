@@ -1,0 +1,575 @@
+<html><head><META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Apache Tomcat 7 (7.0.93) - Logging in Tomcat</title><meta name="author" content="Allistair Crossley"><meta name="author" content="Yoav Shapira"><style type="text/css" media="print">
+    .noPrint {display: none;}
+    td#mainBody {width: 100%;}
+</style><style type="text/css">
+code {background-color:rgb(224,255,255);padding:0 0.1em;}
+code.attributeName, code.propertyName {background-color:transparent;}
+
+
+table {
+  border-collapse: collapse;
+  text-align: left;
+}
+table *:not(table) {
+  /* Prevent border-collapsing for table child elements like <div> */
+  border-collapse: separate;
+}
+
+th {
+  text-align: left;
+}
+
+
+div.codeBox pre code, code.attributeName, code.propertyName, code.noHighlight, .noHighlight code {
+  background-color: transparent;
+}
+div.codeBox {
+  overflow: auto;
+  margin: 1em 0;
+}
+div.codeBox pre {
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #999;
+  border-radius: 5px;
+  background-color: #eff8ff;
+  display: table; /* To prevent <pre>s from taking the complete available width. */
+  /*
+  When it is officially supported, use the following CSS instead of display: table
+  to prevent big <pre>s from exceeding the browser window:
+  max-width: available;
+  width: min-content;
+  */
+}
+
+div.codeBox pre.wrap {
+  white-space: pre-wrap;
+}
+
+
+table.defaultTable tr, table.detail-table tr {
+    border: 1px solid #CCC;
+}
+
+table.defaultTable tr:nth-child(even), table.detail-table tr:nth-child(even) {
+    background-color: #FAFBFF;
+}
+
+table.defaultTable tr:nth-child(odd), table.detail-table tr:nth-child(odd) {
+    background-color: #EEEFFF;
+}
+
+table.defaultTable th, table.detail-table th {
+  background-color: #88b;
+  color: #fff;
+}
+
+table.defaultTable th, table.defaultTable td, table.detail-table th, table.detail-table td {
+  padding: 5px 8px;
+}
+
+
+p.notice {
+    border: 1px solid rgb(255, 0, 0);
+    background-color: rgb(238, 238, 238);
+    color: rgb(0, 51, 102);
+    padding: 0.5em;
+    margin: 1em 2em 1em 1em;
+}
+</style></head><body bgcolor="#ffffff" text="#000000" link="#525D76" alink="#525D76" vlink="#525D76"><table border="0" width="100%" cellspacing="0"><!--PAGE HEADER--><tr><td><!--PROJECT LOGO--><a href="https://tomcat.apache.org/"><img src="./images/tomcat.gif" align="right" alt="
+      The Apache Tomcat Servlet/JSP Container
+    " border="0"></a></td><td><h1><font face="arial,helvetica,sanserif">Apache Tomcat 7</font></h1><font face="arial,helvetica,sanserif">Version 7.0.93, Feb 16 2019</font></td><td><!--APACHE LOGO--><a href="http://www.apache.org/"><img src="./images/asf-logo.svg" align="right" alt="Apache Logo" border="0" style="width: 266px;height: 83px;"></a></td></tr></table><table border="0" width="100%" cellspacing="4"><!--HEADER SEPARATOR--><tr><td colspan="2"><hr noshade size="1"></td></tr><tr><!--LEFT SIDE NAVIGATION--><td width="20%" valign="top" nowrap class="noPrint"><p><strong>Links</strong></p><ul><li><a href="index.html">Docs Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul><p><strong>User Guide</strong></p><ul><li><a href="introduction.html">1) Introduction</a></li><li><a href="setup.html">2) Setup</a></li><li><a href="appdev/index.html">3) First webapp</a></li><li><a href="deployer-howto.html">4) Deployer</a></li><li><a href="manager-howto.html">5) Manager</a></li><li><a href="host-manager-howto.html">6) Host Manager</a></li><li><a href="realm-howto.html">7) Realms and AAA</a></li><li><a href="security-manager-howto.html">8) Security Manager</a></li><li><a href="jndi-resources-howto.html">9) JNDI Resources</a></li><li><a href="jndi-datasource-examples-howto.html">10) JDBC DataSources</a></li><li><a href="class-loader-howto.html">11) Classloading</a></li><li><a href="jasper-howto.html">12) JSPs</a></li><li><a href="ssl-howto.html">13) SSL/TLS</a></li><li><a href="ssi-howto.html">14) SSI</a></li><li><a href="cgi-howto.html">15) CGI</a></li><li><a href="proxy-howto.html">16) Proxy Support</a></li><li><a href="mbeans-descriptors-howto.html">17) MBeans Descriptors</a></li><li><a href="default-servlet.html">18) Default Servlet</a></li><li><a href="cluster-howto.html">19) Clustering</a></li><li><a href="balancer-howto.html">20) Load Balancer</a></li><li><a href="connectors.html">21) Connectors</a></li><li><a href="monitoring.html">22) Monitoring and Management</a></li><li><a href="logging.html">23) Logging</a></li><li><a href="apr.html">24) APR/Native</a></li><li><a href="virtual-hosting-howto.html">25) Virtual Hosting</a></li><li><a href="aio.html">26) Advanced IO</a></li><li><a href="extras.html">27) Additional Components</a></li><li><a href="maven-jars.html">28) Mavenized</a></li><li><a href="security-howto.html">29) Security Considerations</a></li><li><a href="windows-service-howto.html">30) Windows Service</a></li><li><a href="windows-auth-howto.html">31) Windows Authentication</a></li><li><a href="jdbc-pool.html">32) Tomcat's JDBC Pool</a></li><li><a href="web-socket-howto.html">33) WebSocket</a></li></ul><p><strong>Reference</strong></p><ul><li><a href="RELEASE-NOTES.txt">Release Notes</a></li><li><a href="config/index.html">Configuration</a></li><li><a href="api/index.html">Tomcat Javadocs</a></li><li><a href="servletapi/index.html">Servlet Javadocs</a></li><li><a href="jspapi/index.html">JSP 2.2 Javadocs</a></li><li><a href="elapi/index.html">EL 2.2 Javadocs</a></li><li><a href="websocketapi/index.html">WebSocket 1.1 Javadocs</a></li><li><a href="https://tomcat.apache.org/connectors-doc/">JK 1.2 Documentation</a></li></ul><p><strong>Apache Tomcat Development</strong></p><ul><li><a href="building.html">Building</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="https://wiki.apache.org/tomcat/TomcatVersions">Status</a></li><li><a href="developers.html">Developers</a></li><li><a href="architecture/index.html">Architecture</a></li><li><a href="funcspecs/index.html">Functional Specs.</a></li><li><a href="tribes/introduction.html">Tribes</a></li></ul></td><!--RIGHT SIDE MAIN BODY--><td width="80%" valign="top" align="left" id="mainBody"><h1>汤姆猫中的日志</h1><table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#525D76"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Table of Contents"><!--()--></a><a name="Table_of_Contents"><strong>目录</strong></a></font></td></tr><tr><td><blockquote>
+<ul><li><a href="#Introduction">介绍</a><ol><li><a href="#Java_logging_API_%E2%80%94_java.util.logging">Java logging API &mdash; java.util.logging</a></li><li><a href="#Servlets_logging_API">Servlets logging API</a></li><li><a href="#Console">Console</a></li><li><a href="#Access_logging">Access logging</a></li></ol></li><li><a href="#Using_java.util.logging_(default)">Using java.util.logging (default)</a><ol><li><a href="#Documentation_references">Documentation references</a></li><li><a href="#Considerations_for_productive_usage">Considerations for productive usage</a></li></ol></li><li><a href="#Using_Log4j">Using Log4j</a></li></ul>
+</blockquote></td></tr></table><table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#525D76"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Introduction"><strong>介绍</strong></a></font></td></tr><tr><td><blockquote>
+    <p>
+      Apache Tomcat 中的日志功能是借 <a href="https://commons.apache.org/logging">Apache Commons Logging</a> 库实现的。
+      这个库是不同日志框架的简易包装。
+      它为 Tomcat 提供了无需依赖特定的日志实现就能给各种日志级别分层记录的功能。
+    </p>
+
+    <p>
+      从 Tomcat 6.0 开始，Tomcat 使用 Apache Commons Logging 的私有包重命名实现(private package-renamed implementation)，
+      允许Web应用程序使用自己独立的原始Apache Commons Logging库副本。
+      在默认发行版本中，这个库的私有副本被简化并使用 <code>java.util.logging</code> 框架硬编码。
+    </p>
+
+    <p>
+      要将 Tomcat 配置为使用其他日志记录框架进行内部日志记录，必须将日志库替换为使用完整实现构建的日志库。
+      需提供这种库的<a href="extras.html">附加</a>组件。
+      有关如何配置 Tomcat 以使用Log4j框架进行内部日志记录的说明，请参见<a href="#Using_Log4j">下文</a>。
+    </p>
+
+    <p>
+      在Apache Tomcat上运行的Web应用程序可以：
+    </p>
+    <ul>
+      <li>
+        使用系统日志 API，<code>java.util.logging</code>。
+      </li>
+      <li>
+        使用 Java Servlets 规范提供的日志记录 API，<code>javax.servlet.ServletContext.log(...)</code>
+      </li>
+      <li>
+        使用其选择的任何日志框架。
+      </li>
+    </ul>
+
+    <p>
+      不同Web应用程序使用的日志记录框架彼此独立运行。
+      需要详细信息，请参阅 <a href="class-loader-howto.html">类加载(class loading)</a>。
+      此规则的例外是 <code>java.util.logging</code>，如果它由您的日志库直接或间接使用。
+      这是因为它由系统加载并在Web应用程序之间共享。
+    </p>
+
+    <table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#828DA6"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Java logging API %E2%80%94 java.util.logging"><!--()--></a><a name="Java_logging_API_%E2%80%94_java.util.logging"><strong>Java logging API &mdash; java.util.logging</strong></a></font></td></tr><tr><td><blockquote>
+
+    <p>
+      Apache Tomcat 有自己的几个<code>java.util.logging</code>API 关键元素的实现。
+      这种实现称为“JULI”。
+      关键组件是一个自定义 LogManager 实现，它知道在 Tomcat 上运行的不同Web应用程序（及其不同的类加载器）。
+      它支持每个应用程序日志配置私有。
+      当从内存中卸载 Web 应用程序时，Tomcat 也会通知它，以便可以清除对其类的引用，从而防止内存泄漏。
+    </p>
+
+    <p>
+      通过在启动Java时提供某些系统属性来启用此<code>java.util.logging</code>实现。
+      Apache Tomcat 启动脚本为您执行此操作，但如果您使用不同的工具来运行Tomcat（例如jsvc，或从IDE中运行Tomcat），您应该自己处理它们。
+    </p>
+
+    <p>
+      有关java.util.logging的更多详细信息，请参阅JDK的文档以及<code>java.util.logging</code>包的Javadoc页面。
+    </p>
+
+    <p>
+      有关Tomcat JULI的更多详细信息，请参见下文。
+    </p>
+
+    </blockquote></td></tr></table>
+
+    <table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#828DA6"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Servlets logging API"><!--()--></a><a name="Servlets_logging_API"><strong>Servlets logging API</strong></a></font></td></tr><tr><td><blockquote>
+
+    <p>
+      记录日志消息的<code>javax.servlet.ServletContext.log(...)</code>调用由内部 Tomcat 日志处理。
+      此类消息将由这个类记录
+    </p>
+      <div class="codeBox"><pre><code>org.apache.catalina.core.ContainerBase.[${engine}].[${host}].[${context}]</code></pre></div>
+    <p>
+      此日志记录根据Tomcat日志记录配置执行。
+      您无法在Web应用程序中覆盖它。
+    </p>
+
+    <p>
+      Servlets logging API 早于 Java 提供的 <code>java.util.logging</code> API。
+      因此，它没有为您提供太多选择。例如，您无法控制日志级别。
+      需要注意的是，在 Apache Tomcat 实现中，对 <code>ServletContext.log(String)</code>
+      或 <code>GenericServlet.log(String)</code> 的调用将被记录为 INFO 级别。
+      对  <code>ServletContext.log(String, Throwable)</code> 或
+      <code>GenericServlet.log(String, Throwable)</code> 的调用将被记录为 SEVERE 级别。 
+    </p>
+
+    </blockquote></td></tr></table>
+
+    <table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#828DA6"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Console"><strong>控制台</strong></a></font></td></tr><tr><td><blockquote>
+
+    <p>
+      在 unix 上运行 Tomcat 时，控制台输出通常会重定向到名为 <code>catalina.out</code> 的文件中。
+      该名称可使用环境变量进行配置。（请参阅启动脚本）。
+      写入 <code>System.err/out</code> 的内容将被捕获到该文件中。这可能包括：
+    </p>
+
+    <ul>
+      <li>由 <code>java.lang.ThreadGroup.uncaughtException(..)</code> 打印的未捕获异常</li>
+      <li>线程转储(Thread dumps)，如果您通过系统信号请求它们</li>
+    </ul>
+
+    <p>
+      在 Windows 上作为服务运行时，控制台输出也会被捕获并重定向，但文件名不同。
+    </p>
+
+    <p>
+      Apache Tomcat 中的默认日志配置将相同的消息写入控制台和日志文件中。
+      这在使用Tomcat进行开发时很好，但通常在生产中不需要。
+    </p>
+
+    <p>
+      仍使用 <code>System.out</code> 或 <code>System.err</code> 的旧应用程序可以在
+      <a href="config/context.html">Context</a>上设置 <code>swallowOutput</code> 属性。
+      如果该属性设置为<code>true</code>，则将拦截在请求处理期间对
+      <code>System.out/err</code> 的调用，并使用
+      <code>javax.servlet.ServletContext.log(...)</code>调用将其输出提供给日志记录子系统。<br>
+      <strong>注意</strong>, <code>swallowOutput</code> 功能实际上是一个技巧，它有其局限性。
+      它仅适用于直接调用<code>System.out/err</code>，并且仅在请求处理周期期间。
+      它可能不适用于可能由应用程序创建的其他线程。
+      它不能用于拦截自己写入系统流的日志框架，因为它们很早就开始，并且可能在重定向发生之前获得对流的直接引用。
+    </p>
+
+    </blockquote></td></tr></table>
+
+    <table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#828DA6"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Access logging"><!--()--></a><a name="Access_logging"><strong>访问日志</strong></a></font></td></tr><tr><td><blockquote>
+
+    <p>
+      访问日志是一个相关但不同的功能，它实现为 <code>Valve</code>。
+      它使用自包含逻辑来编写其日志文件。
+      访问日志记录的基本要求是以较低的开销处理大量连续数据流，因此它只使用Apache Commons Logging来获取自己的调试消息。
+      此实现方法避免了额外的开销和可能复杂的配置。
+      有关其配置的更多详细信息，请参阅 <a href="config/valve.html#Access_Logging">Valves</a>
+      文档，里面包括各种报告格式。
+    </p>
+
+    </blockquote></td></tr></table>
+
+  </blockquote></td></tr></table><table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#525D76"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Using java.util.logging (default)"><!--()--></a><a name="Using_java.util.logging_(default)"><strong>Using java.util.logging (default)</strong></a></font></td></tr><tr><td><blockquote>
+
+  <p>
+    JDK中提供的 java.util.logging 的默认实现太有限，无法使用。
+    JDK Logging 的限制似乎是无法进行按 Web 应用程序进行日志记录，因为配置是按VM进行的。
+    因此，Tomcat 将在默认配置中使用名为 JULI 的容器友好实现替换默认的 LogManager 实现，该实现解决了这些缺点。
+    它支持与标准JDK java.util.logging 相同的使用编程方法或属性文件配置机制。
+    主要区别在于可以设置每个类加载器属性文件（这使得易于重新部署友好的webapp配置），
+    并且属性文件支持稍微扩展的构造，这允许更自由地定义处理程序并将它们分配给记录器。
+  </p>
+  <p>
+    默认情况下启用JULI，除常规全局 java.util.logging 配置外，还支持每个类加载器配置。这意味着可以在以下层配置日志记录：
+  </p>
+    <ul>
+      <li>在全局范围内。这通常在<code>${catalina.base}/conf/logging.properties</code> 文件中完成。
+        该文件由 <code>java.util.logging.config.file</code> 系统属性指定，该属性由启动脚本设置。
+        如果它不可读或未配置，则默认使用 JRE 中的<code>${java.home}/lib/logging.properties</code> 文件。
+      </li>
+      <li>在 Web 应用程序中。该文件将是
+        <code>WEB-INF/classes/logging.properties</code>
+      </li>
+    </ul>
+  <p>
+    JRE 中的默认 <code>logging.properties</code> 指定将日志记录路由到System.err的<code>ConsoleHandler</code> 。 
+    Apache Tomcat 中的默认 <code>conf/logging.properties</code> 还添加了几个写入文件的 <code>FileHandler</code>。
+  </p>
+  <p>
+    处理程序的日志级别阈值默认为 INFO，也可以设置为 SEVERE，WARNING，INFO，CONFIG，FINE，FINER，FINEST或ALL。
+    您还可以定位特定包以收集日志记录并指定级别。
+  </p>
+  <p>
+    以下是如何从Tomcat设置调试。您需要确保ConsoleHandler（或FileHandler）级别也设置为收集此阈值，因此应设置 FINEST 或 ALL。
+    有关完整的详细信息，请参阅JDK中的 <code>java.util.logging</code> 文档：
+  </p>
+  <div class="codeBox"><pre><code>org.apache.catalina.level=FINEST</code></pre></div>
+  <p>
+    JULI使用的配置与普通 <code>java.util.logging</code> 支持的配置极为相似，但使用了一些扩展，以便更灵活地分配记录器。主要区别是：
+  </p>
+  <ul>
+      <li>可以将前缀添加到处理程序名称，以便可以实例化单个类的多个处理程序。
+      前缀是一个以数字开头的String，以'.'结尾。例如， <code>22foobar.</code> 是一个有效的前缀。</li>
+      <li>对包含 ${systemPropertyName} 的属性值执行系统属性替换。</li>
+      <li>与在Java 6中一样，记录器可以使用
+      <code>loggerName.handlers</code> 属性定义处理程序列表。</li>
+      <li>默认情况下，如果记录器具有关联的处理程序，则它们不会委托给父项。这可以使用
+      <code>loggerName.useParentHandlers</code> 属性在每个记录器中更改，该属性接受布尔值。</li>
+      <li>根记录器可以使用<code>.handlers</code> 属性定义其处理程序集。</li>
+      <li> 默认情况下，日志文件将永久保留在文件系统中。可以使用 <code>handlerName.maxDays</code> 属性为每个处理程序更改此值。
+      如果属性的指定值 <code>&lt;=0</code> ，则日志文件将永久保留在文件系统上，否则它们将保持指定的最大天数。</li>
+  </ul>
+  <p>
+    还有几个额外的实现类，可以与Java提供的类一起使用。值得注意的是 <code>org.apache.juli.FileHandler</code>。
+  </p>
+  <p>
+    <code>org.apache.juli.FileHandler</code> 支持缓存日志。默认情况下不启用缓冲。
+    要配置它，请使用处理程序的<code>bufferSize</code> 属性。
+    值为<code>0</code>表示使用系统默认缓冲（通常使用8K缓冲区）。
+    值 <code>&lt;0</code> 会强制写入器在每次写入日志时刷新。
+    值 <code>&gt;0</code> 使用具有定义值的BufferedOutputStream，但请注意也将应用系统默认缓冲。
+  </p>
+  <p>
+    示例logging.properties文件放在$CATALINA_BASE/conf中：
+  </p>
+  <div class="codeBox"><pre><code>handlers = 1catalina.org.apache.juli.FileHandler, \
+           2localhost.org.apache.juli.FileHandler, \
+           3manager.org.apache.juli.FileHandler, \
+           java.util.logging.ConsoleHandler
+
+.handlers = 1catalina.org.apache.juli.FileHandler, java.util.logging.ConsoleHandler
+
+############################################################
+# Handler specific properties.
+# Describes specific configuration info for Handlers.
+############################################################
+
+1catalina.org.apache.juli.FileHandler.level = FINE
+1catalina.org.apache.juli.FileHandler.directory = ${catalina.base}/logs
+1catalina.org.apache.juli.FileHandler.prefix = catalina.
+1catalina.org.apache.juli.FileHandler.maxDays = 90
+1catalina.org.apache.juli.FileHandler.encoding = UTF-8
+
+2localhost.org.apache.juli.FileHandler.level = FINE
+2localhost.org.apache.juli.FileHandler.directory = ${catalina.base}/logs
+2localhost.org.apache.juli.FileHandler.prefix = localhost.
+2localhost.org.apache.juli.FileHandler.maxDays = 90
+2localhost.org.apache.juli.FileHandler.encoding = UTF-8
+
+3manager.org.apache.juli.FileHandler.level = FINE
+3manager.org.apache.juli.FileHandler.directory = ${catalina.base}/logs
+3manager.org.apache.juli.FileHandler.prefix = manager.
+3manager.org.apache.juli.FileHandler.bufferSize = 16384
+3manager.org.apache.juli.FileHandler.maxDays = 90
+3manager.org.apache.juli.FileHandler.encoding = UTF-8
+
+java.util.logging.ConsoleHandler.level = FINE
+java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+java.util.logging.ConsoleHandler.encoding = UTF-8
+
+############################################################
+# Facility specific properties.
+# Provides extra control for each logger.
+############################################################
+
+org.apache.catalina.core.ContainerBase.[Catalina].[localhost].level = INFO
+org.apache.catalina.core.ContainerBase.[Catalina].[localhost].handlers = \
+   2localhost.org.apache.juli.FileHandler
+
+org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/manager].level = INFO
+org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/manager].handlers = \
+   3manager.org.apache.juli.FileHandler
+
+# For example, set the org.apache.catalina.util.LifecycleBase logger to log
+# each component that extends LifecycleBase changing state:
+#org.apache.catalina.util.LifecycleBase.level = FINE</code></pre></div>
+
+    <p>
+      servlet-examples Web应用程序的log.properties示例，放置在Web应用程序内的 WEB-INF/classes 中：
+    </p>
+    <div class="codeBox"><pre><code>handlers = org.apache.juli.FileHandler, java.util.logging.ConsoleHandler
+
+############################################################
+# Handler specific properties.
+# Describes specific configuration info for Handlers.
+############################################################
+
+org.apache.juli.FileHandler.level = FINE
+org.apache.juli.FileHandler.directory = ${catalina.base}/logs
+org.apache.juli.FileHandler.prefix = servlet-examples.
+
+java.util.logging.ConsoleHandler.level = FINE
+java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter</code></pre></div>
+
+
+    <table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#828DA6"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Documentation references"><!--()--></a><a name="Documentation_references"><strong>文档参考</strong></a></font></td></tr><tr><td><blockquote>
+      <p>有关其他信息，请参阅以下资源：</p>
+      <ul>
+        <li>Apache Tomcat Javadoc for the
+          <a href="api/org/apache/juli/package-summary.html"><code>org.apache.juli</code></a>
+          package.
+        </li>
+        <li>Oracle Java 6 Javadoc for the
+          <a href="http://docs.oracle.com/javase/6/docs/api/java/util/logging/package-summary.html"><code>java.util.logging</code></a>
+          package.
+        </li>
+      </ul>
+    </blockquote></td></tr></table>
+
+    <table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#828DA6"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Considerations for productive usage"><!--()--></a><a name="Considerations_for_productive_usage"><strong>有效使用的注意事项</strong></a></font></td></tr><tr><td><blockquote>
+      <p>您可能需要注意以下事项：</p>
+      <ul>
+        <li><p>考虑从配置中删除 <code>ConsoleHandler</code> 。</p>
+        <p>默认情况下（由于 <code>.handlers</code> 设置），日志记录同时传递给 
+        <code>FileHandler</code> 和 <code>ConsoleHandler</code>。 
+        后者的输出通常被捕获到文件中，例如
+        <code>catalina.out</code>。 因此，您最终得到两份相同的消息。</p>
+        </li>
+        <li><p>考虑删除不使用的应用程序的 <code>FileHandler</code> 。例如，<code>host-manager</code>。</p></li>
+        <li><p>默认情况下，处理程序使用系统默认编码来写入日志文件。它可以通过 <code>encoding</code> 配置编码属性。有关详细信息，请参阅Javadoc。</p></li>
+        <li><p>考虑配置Access日志 <a href="config/valve.html#Access_Logging">Access log</a>。</p></li>
+      </ul>
+    </blockquote></td></tr></table>
+
+  </blockquote></td></tr></table><table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#525D76"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="Using Log4j"><!--()--></a><a name="Using_Log4j"><strong>Using Log4j</strong></a></font></td></tr><tr><td><blockquote>
+    <p>
+      本节介绍如何将 Tomcat 配置使用
+      <a href="http://logging.apache.org/log4j/">log4j</a> 而不是java.util.logging 进行所有Tomcat的内部日志记录。
+    </p>
+    <p><em>注意</em>：如果要将 Tomcat 重新配置为使用 Apache log4j 进行自己的日志记录，则需要执行本节中描述的步骤。
+      如果您只想在自己的Web应用程序中使用log4j，则<strong>不</strong>需要这些步骤。
+      &mdash; 在这种情况下，只需将 <code>log4j.jar</code> 和 <code>log4j.properties</code> 放入Web应用程序的
+      <code>WEB-INF/lib</code> 和 <code>WEB-INF/classes</code>中。
+    </p>
+    <p>
+      以下步骤描述了配置log4j以输出Tomcat的内部日志记录。
+    </p>
+
+    <ol>
+        <li>使用以下内容创建名为 <code>log4j.properties</code> 的文件，并将其保存到 <code>$CATALINA_BASE/lib</code>中</li>
+    </ol>
+    <div class="codeBox"><pre><code>
+log4j.rootLogger = INFO, CATALINA
+
+# Define all the appenders
+log4j.appender.CATALINA = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.CATALINA.File = ${catalina.base}/logs/catalina
+log4j.appender.CATALINA.Append = true
+log4j.appender.CATALINA.Encoding = UTF-8
+# Roll-over the log once per day
+log4j.appender.CATALINA.DatePattern = '.'yyyy-MM-dd'.log'
+log4j.appender.CATALINA.layout = org.apache.log4j.PatternLayout
+log4j.appender.CATALINA.layout.ConversionPattern = %d [%t] %-5p %c- %m%n
+
+log4j.appender.LOCALHOST = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.LOCALHOST.File = ${catalina.base}/logs/localhost
+log4j.appender.LOCALHOST.Append = true
+log4j.appender.LOCALHOST.Encoding = UTF-8
+log4j.appender.LOCALHOST.DatePattern = '.'yyyy-MM-dd'.log'
+log4j.appender.LOCALHOST.layout = org.apache.log4j.PatternLayout
+log4j.appender.LOCALHOST.layout.ConversionPattern = %d [%t] %-5p %c- %m%n
+
+log4j.appender.MANAGER = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.MANAGER.File = ${catalina.base}/logs/manager
+log4j.appender.MANAGER.Append = true
+log4j.appender.MANAGER.Encoding = UTF-8
+log4j.appender.MANAGER.DatePattern = '.'yyyy-MM-dd'.log'
+log4j.appender.MANAGER.layout = org.apache.log4j.PatternLayout
+log4j.appender.MANAGER.layout.ConversionPattern = %d [%t] %-5p %c- %m%n
+
+log4j.appender.HOST-MANAGER = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.HOST-MANAGER.File = ${catalina.base}/logs/host-manager
+log4j.appender.HOST-MANAGER.Append = true
+log4j.appender.HOST-MANAGER.Encoding = UTF-8
+log4j.appender.HOST-MANAGER.DatePattern = '.'yyyy-MM-dd'.log'
+log4j.appender.HOST-MANAGER.layout = org.apache.log4j.PatternLayout
+log4j.appender.HOST-MANAGER.layout.ConversionPattern = %d [%t] %-5p %c- %m%n
+
+log4j.appender.CONSOLE = org.apache.log4j.ConsoleAppender
+log4j.appender.CONSOLE.Encoding = UTF-8
+log4j.appender.CONSOLE.layout = org.apache.log4j.PatternLayout
+log4j.appender.CONSOLE.layout.ConversionPattern = %d [%t] %-5p %c- %m%n
+
+# Configure which loggers log to which appenders
+log4j.logger.org.apache.catalina.core.ContainerBase.[Catalina].[localhost] = INFO, LOCALHOST
+log4j.logger.org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/manager] =\
+  INFO, MANAGER
+log4j.logger.org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/host-manager] =\
+  INFO, HOST-MANAGER</code></pre></div>
+    <ol start="2">
+        <li><a href="http://logging.apache.org/log4j">Download Log4J</a>
+        (Tomcat requires v1.2.x).</li>
+
+        <li><p>下载或构建 <code>tomcat-juli.jar</code> 和 
+        <code>tomcat-juli-adapters.jar</code> ，它们可用作Tomcat的“extras”组件。
+        有关详细信息，请参阅<a href="extras.html">其他组件</a> 。</p>
+        <p>这个 <code>tomcat-juli.jar</code> 与默认值不同。它包含完整的Apache Commons Logging实现，因此能够发现log4j的存在并进行自我配置。</p>
+        </li>
+
+        <li><p>如果要将 Tomcat 配置为全局使用log4j：</p>
+        <ul>
+          <li>将 <code>log4j.jar</code> 和
+            <code>tomcat-juli-adapters.jar</code> 从“extras”放入
+            <code>$CATALINA_HOME/lib</code>。</li>
+          <li>替换 <code>$CATALINA_HOME/bin/tomcat-juli.jar</code> 为"extras"的
+          <code>tomcat-juli.jar</code></li>
+        </ul>
+        </li>
+
+        <li><p>如果您使用单独的 $CATALINA_HOME 和
+        $CATALINA_BASE 运行Tomcat，并且希望仅在单个
+        $CATALINA_BASE 中配置使用log4j：</p>
+        <ul>
+          <li>如果它们不存在，则创建 <code>$CATALINA_BASE/bin</code> and
+          <code>$CATALINA_BASE/lib</code> 目录。
+          </li>
+          <li>Put <code>log4j.jar</code> and
+             <code>tomcat-juli-adapters.jar</code> from "extras" into
+             <code>$CATALINA_BASE/lib</code></li>
+          <li>Put <code>tomcat-juli.jar</code> from "extras" as
+            <code>$CATALINA_BASE/bin/tomcat-juli.jar</code></li>
+          <li>如果您正在使用<a href="security-manager-howto.html">安全管理器</a>，
+            则需要编辑$ CATALINA_BASE / conf / catalina.policy
+          <code>$CATALINA_BASE/conf/catalina.policy</code> 文件以将其调整为使用tomcat-juli.jar的不同副本。
+          以将其调整为使用tomcat-juli.jar的不同副本。</li>
+        </ul>
+        </li>
+
+        <li><p>删除<code>$CATALINA_BASE/conf/logging.properties</code> 
+        以防止 java.util.logging 生成零长度的日志文件。</p></li>
+
+        <li><p>Start Tomcat</p></li>
+    </ol>
+
+    <p>
+      此 log4j 配置镜像 Tomcat 附带的默认 java.util.logging 设置：
+      管理器和主机管理器应用程序获取单独的日志文件，
+      其他所有内容都转到“catalina.log”日志文件。
+      每个文件每天翻转一次。
+    </p>
+
+    <p>
+      你可以（而且应该）更加挑剔日志中包含哪些软件包。
+      Tomcat按引擎和主机名定义记录器。
+      例如，要获得更详细的 Catalina localhost 日志，请将其添加到上面 log4j.properties 的末尾。
+      请注意，在基于log4j XML的配置文件中使用此命名约定（带方括号）存在已知问题，
+      因此我们建议您使用所描述的属性文件，直到将来版本的log4j允许此约定。
+    </p>
+      <div class="codeBox"><pre><code>log4j.logger.org.apache.catalina.core.ContainerBase.[Catalina].[localhost]=DEBUG
+log4j.logger.org.apache.catalina.core=DEBUG
+log4j.logger.org.apache.catalina.session=DEBUG</code></pre></div>
+
+    <p>
+      请注意：DEBUG级别将产生兆字节的日志记录并延缓启动Tomcat。
+      在需要调试内部Tomcat操作时，应谨慎使用此级别。
+    </p>
+
+    <p>
+      您的Web应用程序当然应该使用自己的log4j配置。这适用于上述配置。
+      您可以将类似的 log4j.properties 文件放在Web应用程序的 WEB-INF/classes 
+      目录中，将 log4jx.y.z.jar 放入 WEB-INF/lib 中。
+      然后指定包级别日志记录。这是 log4j 的基本设置，*不*需要Commons-Logging，
+      您应该查阅<a href="http://logging.apache.org/log4j/docs/documentation.html">log4j
+      文档 </a>以获取更多选项。此页面仅用作引导指南。
+    </p>
+
+    <p><em>补充说明</em></p>
+    <ul>
+        <li><p>这通过 Common 类加载器将 log4j 库公开给 Web 应用程序。
+        有关详细信息，请参阅<a href="class-loader-howto.html">类加载</a>
+        文档。</p>
+        <p>因此，使用<a href="http://commons.apache.org/logging">Apache Commons Logging</a>
+        库的 Web 应用程序和库可能会自动选择 log4j 作为底层日志记录实现。</p></li>
+
+        <li><p><code>java.util.logging</code> API 仍可用于直接使用它的Web应用程序。
+        Tomcat 启动脚本仍引用
+        <code>${catalina.base}/conf/logging.properties</code>文件。 
+        有关详细信息，请参阅本页 <a href="#Introduction">简介</a> 小节。</p>
+        <p> 删除 <code>${catalina.base}/conf/logging.properties</code>
+        文件，作为上述步骤之一提到，会导致
+        <code>java.util.logging</code> 回退到JRE的默认配置，即使用ConsoleHandler，
+        因此不会创建 任何标准日志文件。 
+        在禁用标准机制之<i>前</i>，应确认log4j正在创建所有日志文件。</p></li>
+
+        <li><p><strong>Access Log Valve</strong> 和
+        <strong>ExtendedAccessLogValve</strong>  
+        使用自己的自包含日志记录实现，因此<strong><i>无法将它们配置为使用log4j</i></strong>。
+        有关具体配置详细信息，请参阅 <a href="config/valve.html#Access_Logging">Valves</a>。</p></li>
+    </ul>
+  </blockquote></td></tr></table></td></tr><tr class="noPrint"><td width="20%" valign="top" nowrap class="noPrint"></td><td width="80%" valign="top" align="left"><table border="0" cellspacing="0" cellpadding="2"><tr><td bgcolor="#525D76"><font color="#ffffff" face="arial,helvetica.sanserif"><a name="comments_section" id="comments_section"><strong>Comments</strong></a></font></td></tr><tr><td><blockquote><p class="notice"><strong>Notice:</strong> This comments section collects your suggestions
+              on improving documentation for Apache Tomcat.<br><br>
+              If you have trouble and need help, read
+              <a href="http://tomcat.apache.org/findhelp.html">Find Help</a> page
+              and ask your question on the tomcat-users
+              <a href="http://tomcat.apache.org/lists.html">mailing list</a>.
+              Do not ask such questions here. This is not a Q&amp;A section.<br><br>
+              The Apache Comments System is explained <a href="./comments.html">here</a>.
+              Comments may be removed by our moderators if they are either
+              implemented or considered invalid/off-topic.</p><script type="text/javascript"><!--//--><![CDATA[//><!--
+              var comments_shortname = 'tomcat';
+              var comments_identifier = 'http://tomcat.apache.org/tomcat-7.0-doc/logging.html';
+              (function(w, d) {
+                  if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
+                      d.write('<div id="comments_thread"><\/div>');
+                      var s = d.createElement('script');
+                      s.type = 'text/javascript';
+                      s.async = true;
+                      s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+                      (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+                  }
+                  else {
+                      d.write('<div id="comments_thread"><strong>Comments are disabled for this page at the moment.<\/strong><\/div>');
+                  }
+              })(window, document);
+              //--><!]]></script></blockquote></td></tr></table></td></tr><!--FOOTER SEPARATOR--><tr><td colspan="2"><hr noshade size="1"></td></tr><!--PAGE FOOTER--><tr><td colspan="2"><div align="center"><font color="#525D76" size="-1"><em>
+        Copyright &copy; 1999-2019, Apache Software Foundation
+        </em></font></div></td></tr></table></body></html>
